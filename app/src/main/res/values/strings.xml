@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyInventory</string>
+    <string name="sell">Sell</string>
 </resources>

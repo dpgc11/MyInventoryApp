@@ -14,10 +14,16 @@
         android:scaleType="centerCrop"
         tools:src="@mipmap/ic_launcher" />
 
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/holo_purple"></View>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="5"
+        android:background="@android:color/darker_gray"
         android:orientation="vertical">
 
         <TextView
@@ -35,7 +41,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray"></View>
+            android:background="@android:color/holo_purple"></View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,7 +64,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@android:color/darker_gray"></View>
+                android:background="@android:color/holo_purple"></View>
 
             <TextView
                 android:id="@+id/quantityTextview"
@@ -78,14 +84,17 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/holo_purple"></View>
+
     <Button
         android:id="@+id/sellButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
         android:textAlignment="center"
-        android:gravity=""
-        android:background="@android:color/holo_green_dark"
-        android:text="Sell" />
+        android:text="@string/sell" />
 
 </LinearLayout>
