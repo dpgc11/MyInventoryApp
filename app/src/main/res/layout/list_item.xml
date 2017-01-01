@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_weight="2"
         android:scaleType="centerCrop"
-        tools:src="@mipmap/ic_launcher" />
+        tools:src="@drawable/ic_local_grocery_store_black_24dp" />
 
     <View
         android:layout_width="1dp"
@@ -50,16 +50,30 @@
             android:orientation="horizontal">
 
             <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:text="₹"
+                android:paddingTop="8dp"
+                android:paddingLeft="8dp"
+                android:paddingBottom="8dp"
+                android:gravity="right"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                />
+
+            <TextView
                 android:id="@+id/priceTextview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
-                android:textAlignment="center"
+                android:gravity="left"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                tools:text="Rs.12" />
+                tools:text="12" />
 
             <View
                 android:layout_width="1dp"
@@ -70,7 +84,7 @@
                 android:id="@+id/quantityTextview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center_horizontal"
                 android:padding="8dp"

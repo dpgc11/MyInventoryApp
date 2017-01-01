@@ -45,9 +45,9 @@ public class ItemCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         //Find individual views that we want to modify in the list item layout
 //        ImageView itemImageView = (ImageView) view.findViewById(R.id.imageEditView);
-        TextView nameTextView = (TextView) view.findViewById(R.id.nameEditText);
-        TextView priceTextView = (TextView) view.findViewById(R.id.priceEditText);
-        TextView quantityTextView = (TextView) view.findViewById(R.id.quantityEditText);
+        TextView nameTextView = (TextView) view.findViewById(R.id.nameTextview);
+        TextView priceTextView = (TextView) view.findViewById(R.id.priceTextview);
+        TextView quantityTextView = (TextView) view.findViewById(R.id.quantityTextview);
 
         //Find the column index of item attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);

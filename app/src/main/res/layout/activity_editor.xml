@@ -57,7 +57,7 @@
                     android:layout_weight="8"
                     android:padding="8dp"
                     android:hint="Price"
-                    android:inputType="text" />
+                    android:inputType="numberDecimal" />
 
             </LinearLayout>
 
@@ -68,7 +68,7 @@
                 android:layout_below="@id/priceEditText"
                 android:layout_weight="1"
                 android:hint="Quantity"
-                android:inputType="text" />
+                android:inputType="number" />
 
         </LinearLayout>
 

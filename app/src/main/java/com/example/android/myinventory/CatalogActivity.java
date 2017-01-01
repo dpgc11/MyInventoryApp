@@ -7,20 +7,25 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import com.example.android.myinventory.data.ItemContract.ItemEntry;
+import com.example.android.myinventory.data.ItemDbHelper;
 
 //Displays list of items that were entered and stored in the app
-public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ItemCursorAdapter itemCursorAdapter;
+    TextView displayView;
 
     private static final int ITEM_LOADER = 0;
 
@@ -60,16 +65,20 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
+        displayView = (TextView) findViewById(R.id.textView);
+
         // Kick off the loader
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
     }
 
     /*
-    *  Helper method to insert hardcoded item data into the db. For debugging purposes only
-    * */
+        *  Helper method to insert hardcoded item data into the db. For debugging purposes only
+        * */
     private void insertItem() {
         // Create a content values object where column names are keys,
         // and Veg puff's attributes are values.
+
+
         ContentValues values = new ContentValues();
         values.put(ItemEntry.COLUMN_ITEM_NAME, "Veg Puff");
         values.put(ItemEntry.COLUMN_ITEM_PRICE, 12);
@@ -79,6 +88,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // ContentResolver. Use the PetEntry.ContentUri to indicate
         // that we want to insert into items db table.
         Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
+
     }
 
     @Override
@@ -92,7 +102,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertItem();
@@ -101,13 +111,17 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             case R.id.action_delete_all_entries:
                 deleteAllItems();
                 return true;
+            case R.id.action_add_new_item:
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     // Helper method to delete all items in the db
     private void deleteAllItems() {
-        int rowsDeleted = getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
+        getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
     }
 
     @Override
@@ -118,7 +132,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_PRICE,
-                ItemEntry.COLUMN_ITEM_QUANTITY };
+                ItemEntry.COLUMN_ITEM_QUANTITY};
 
         // This loader will execute the ContentProvider's query
         // method on a background thread
@@ -128,7 +142,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 null,
                 null,
                 null);
-        }
+    }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -142,4 +156,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // Callback called when the data needs to be deleted
         itemCursorAdapter.swapCursor(null);
     }
+
+
+
 }
