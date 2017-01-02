@@ -24,9 +24,13 @@ import com.example.android.myinventory.data.ItemDbHelper;
 //Displays list of items that were entered and stored in the app
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+
+    // adapter for the istView
     ItemCursorAdapter itemCursorAdapter;
+
     TextView displayView;
 
+    // Identifier for the item data loader
     private static final int ITEM_LOADER = 0;
 
     @Override
@@ -42,6 +46,9 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // the loader finishes) so pass in null for the Cursor.
         itemCursorAdapter = new ItemCursorAdapter(this, null);
         itemListView.setAdapter(itemCursorAdapter);
+
+        View emptyView = findViewById(R.id.empty_view);
+        itemListView.setEmptyView(emptyView);
 
         // Setup the item click listener
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -83,6 +90,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         values.put(ItemEntry.COLUMN_ITEM_NAME, "Veg Puff");
         values.put(ItemEntry.COLUMN_ITEM_PRICE, 12);
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 100);
+        values.put(ItemEntry.COLUMN_SUPPLIER_NAME, "Disney Bakery");
+        values.put(ItemEntry.COLUMN_SUPPLIER_CONTACT, 5559999);
 
         // Insert a new row for VegPuff into the provider using the
         // ContentResolver. Use the PetEntry.ContentUri to indicate
