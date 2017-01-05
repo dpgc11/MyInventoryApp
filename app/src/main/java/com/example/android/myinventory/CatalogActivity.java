@@ -7,7 +7,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,19 +18,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.myinventory.data.ItemContract.ItemEntry;
-import com.example.android.myinventory.data.ItemDbHelper;
 
 //Displays list of items that were entered and stored in the app
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
-    // adapter for the istView
-    ItemCursorAdapter itemCursorAdapter;
-
-    TextView displayView;
-
     // Identifier for the item data loader
     private static final int ITEM_LOADER = 0;
+    // adapter for the istView
+    ItemCursorAdapter itemCursorAdapter;
+    TextView displayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +45,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         View emptyView = findViewById(R.id.empty_view);
         itemListView.setEmptyView(emptyView);
+
 
         // Setup the item click listener
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,6 +89,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 100);
         values.put(ItemEntry.COLUMN_SUPPLIER_NAME, "Disney Bakery");
         values.put(ItemEntry.COLUMN_SUPPLIER_CONTACT, 5559999);
+        values.put(ItemEntry.COLUMN_IMAGE, 0);
 
         // Insert a new row for VegPuff into the provider using the
         // ContentResolver. Use the PetEntry.ContentUri to indicate
@@ -141,7 +139,10 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_PRICE,
-                ItemEntry.COLUMN_ITEM_QUANTITY};
+                ItemEntry.COLUMN_ITEM_QUANTITY,
+                ItemEntry.COLUMN_SUPPLIER_NAME,
+                ItemEntry.COLUMN_SUPPLIER_CONTACT,
+                ItemEntry.COLUMN_IMAGE};
 
         // This loader will execute the ContentProvider's query
         // method on a background thread
@@ -165,7 +166,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // Callback called when the data needs to be deleted
         itemCursorAdapter.swapCursor(null);
     }
-
 
 
 }

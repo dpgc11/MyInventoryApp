@@ -74,6 +74,9 @@ public class ItemCursorAdapter extends CursorAdapter {
         final int quantity = cursor.getInt(quantityColumnIndex);
         Uri imageUri = Uri.parse(cursor.getString(itemImageColumnIndex));
         int id = cursor.getInt(idColumnIndex);
+
+        final Uri currentProductUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+
         // Update the textviews with the attributes for the current item
         nameTextView.setText(name);
         priceTextView.setText(Double.toString(price));
@@ -84,20 +87,21 @@ public class ItemCursorAdapter extends CursorAdapter {
                 .centerCrop()
                 .into(itemImage);
 
-        final Uri currentProductUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-
         sellButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentResolver contentResolver = view.getContext().getContentResolver();
+                ContentResolver resolver = view.getContext().getContentResolver();
                 ContentValues values = new ContentValues();
-
                 if (quantity > 0) {
-                    int q = quantity;
-                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY, q--);
-                    contentResolver.update(currentProductUri, values, null, null);
+                    int qq = quantity;
+                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY, --qq);
+                    resolver.update(
+                            currentProductUri,
+                            values,
+                            null,
+                            null
+                    );
                     context.getContentResolver().notifyChange(currentProductUri, null);
-
                 } else {
                     Toast.makeText(context, "Item out of stock", Toast.LENGTH_SHORT).show();
                 }

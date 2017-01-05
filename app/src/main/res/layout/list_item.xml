@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
-    android:orientation="horizontal"
-    android:descendantFocusability="blocksDescendants">
+    android:layout_height="96dp"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal">
 
 
     <ImageView
@@ -12,7 +12,6 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
-        android:scaleType="centerCrop"
         tools:src="@drawable/ic_local_grocery_store_black_24dp" />
 
     <View
@@ -51,15 +50,14 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:fontFamily="sans-serif-medium"
-                android:text="₹"
-                android:paddingTop="8dp"
-                android:paddingLeft="8dp"
+                android:gravity="left"
                 android:paddingBottom="8dp"
-                android:gravity="right"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:text="₹"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 />
 
@@ -70,11 +68,15 @@
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="left"
+                android:maxLines="3"
+                android:paddingBottom="8dp"
+                android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:paddingTop="8dp"
-                android:paddingBottom="8dp"
+                android:scrollbars="vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 tools:text="12" />
+
 
             <View
                 android:layout_width="1dp"
@@ -85,7 +87,7 @@
                 android:id="@+id/quantityTextview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center_horizontal"
                 android:padding="8dp"
@@ -105,11 +107,11 @@
         android:background="@android:color/holo_purple"></View>
 
     <Button
-        android:id="@+id/sellButton"
+        android:id="@+id/btnSellButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
-        android:textAlignment="center"
-        android:text="@string/sell" />
+        android:text="@string/sell"
+        android:textAlignment="center" />
 
 </LinearLayout>

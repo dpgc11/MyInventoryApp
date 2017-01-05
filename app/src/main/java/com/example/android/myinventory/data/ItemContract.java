@@ -18,8 +18,7 @@ public final class ItemContract {
     * give it an empty private constructor
     * */
 
-    private ItemContract() {
-    }
+    public static final String CONTENT_AUTHORITY = "com.example.android.myinventory";
 
     /*
     * The 'Content authority' is a name for the entire content provider, similar to the
@@ -27,15 +26,11 @@ public final class ItemContract {
     * content authority is the package name for the app, which is guaranteed to be unique
     * on the device.
     * */
-
-    public static final String CONTENT_AUTHORITY = "com.example.android.myinventory";
-
     /*
     * Use CONTENT AUTHORITY to create the base of all URI's which apps will use to contact
     * the content provider
     * */
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-
     /*
     * Possible path (appended to base content URI for possible URI's)
     * For instance, content://com.example.android.inventory/items is a valid path for
@@ -43,6 +38,9 @@ public final class ItemContract {
     * as the ContentProvider hasn't been given any info on what too do with "owner"
     * */
     public static final String PATH_ITEMS = "items";
+
+    private ItemContract() {
+    }
 
     /*
     * Inner class that defines constant values for the items db table.
@@ -74,7 +72,7 @@ public final class ItemContract {
         public static final String COLUMN_ITEM_QUANTITY = "quantity";
         public static final String COLUMN_SUPPLIER_NAME = "supplierName";
         public static final String COLUMN_SUPPLIER_CONTACT = "supplierNumber";
-        public static final String COLUMN_SUPPLIER_EMAIL = "supplierEmail";
+        public static final String COLUMN_IMAGE = "image";
 
     }
 

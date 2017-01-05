@@ -1,16 +1,23 @@
 package com.example.android.myinventory;
 
+import android.Manifest;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -18,19 +25,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.android.myinventory.data.ItemContract.ItemEntry;
+
+import java.io.File;
 
 /**
  * Created by Yogesh on 29-12-2016.
  */
 
-public class EditorActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class EditorActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EXISTING_PET_LOADER = 0;
+    private static final int STORAGE_REQUEST_PERMINNISON = 21;
+
+    private static int PICK_PHOTO_REQUEST = 1;
+    private String mCurrentPhotoUri = "no images";
 
     // Content URI for the existing item (null if new)
     private Uri mCurrentItemUri;
@@ -38,10 +54,12 @@ public class EditorActivity extends AppCompatActivity implements
     private boolean mItemHasChanged = false;
 
     private EditText mNameEditText;
+    private Button mUploadPhoto;
     private EditText mPriceEditText;
     private EditText mQuantityEditText;
     private EditText mSupplierNameEditText;
     private EditText mSupplierContactText;
+    private ImageView mImageView;
 
     /*
     * OnTouchListener that listens for any user touches
@@ -57,6 +75,96 @@ public class EditorActivity extends AppCompatActivity implements
         }
     };
 
+    public void onPhotoProductUpdate(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //We are on M or above so we need to ask for runtime permissions
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                invokeGetPhoto();
+            } else {
+                // we are here if we do not all ready have permissions
+                String[] permisionRequest = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                ActivityCompat.requestPermissions(this, permisionRequest, STORAGE_REQUEST_PERMINNISON);
+            }
+        } else {
+            //We are on an older devices so we dont have to ask for runtime permissions
+            invokeGetPhoto();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_REQUEST_PERMINNISON
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            //We got a GO from the user
+
+        } else {
+            Toast.makeText(this, "NEed permissions to access photo", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //    public void selectImageFromDevice(View view) {
+    //        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+    //                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    //
+    //        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+    //    }
+
+    private void invokeGetPhoto() {
+        // invoke the image gallery using an implict intent.
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+
+        // where do we want to find the data?
+        File pictureDirectory =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pictureDirectoryPath = pictureDirectory.getPath();
+        // finally, get a URI representation
+        Uri data = Uri.parse(pictureDirectoryPath);
+
+        // set the data and type.  Get all image types.
+        photoPickerIntent.setDataAndType(data, "image/*");
+
+        // we will invoke this activity, and get something back from it.
+        startActivityForResult(photoPickerIntent, PICK_PHOTO_REQUEST);
+    }
+
+    //    @Override
+    //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    //        super.onActivityResult(requestCode, resultCode, data);
+    //        try {
+    //            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
+    //                && data != null) {
+    //                Uri selectedImage = data.getData();
+    //                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+    //                Cursor cursor = getContentResolver().query(selectedImage,
+    //                        filePathColumn, null, null, null);
+    //                cursor.moveToFirst();
+    //                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+    //                String picturePath = cursor.getString(columnIndex);
+    //                cursor.close();
+    //                mImageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+    //
+    //            }
+    //        } finally {
+    //
+    //        }
+    //    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_PHOTO_REQUEST && resultCode == RESULT_OK) {
+            if (data != null) {
+                //If we are here, everything processed successfully and we have an Uri data
+                Uri mProductPhotoUri = data.getData();
+                mCurrentPhotoUri = mProductPhotoUri.toString();
+
+                //We use Glide to import photo images
+                Glide.with(this).load(mProductPhotoUri).crossFade().fitCenter().into(mImageView);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,12 +176,21 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityEditText = (EditText) findViewById(R.id.quantityEditText);
         mSupplierNameEditText = (EditText) findViewById(R.id.supplierNameEditText);
         mSupplierContactText = (EditText) findViewById(R.id.supplierPhoneEditText);
+        mImageView = (ImageView) findViewById(R.id.imageView);
+        mUploadPhoto = (Button) findViewById(R.id.selectImageButton);
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupplierNameEditText.setOnTouchListener(mTouchListener);
         mSupplierContactText.setOnTouchListener(mTouchListener);
+
+        mUploadPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onPhotoProductUpdate(view);
+            }
+        });
 
         Intent intent = getIntent();
         mCurrentItemUri = intent.getData();
@@ -155,7 +272,8 @@ public class EditorActivity extends AppCompatActivity implements
 
     // Show a dialog that warns the user there are unsaved changes
     // that will be lost if they continue leaving the editor
-    private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
+    private void showUnsavedChangesDialog(
+            DialogInterface.OnClickListener discardButtonClickListener) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Discard your changes and quit editing?");
@@ -206,12 +324,10 @@ public class EditorActivity extends AppCompatActivity implements
 
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
-                Toast.makeText(this, "Delete failed",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, "Delete successfull",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Delete successfull", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -226,7 +342,8 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierName = mSupplierNameEditText.getText().toString().trim();
         int supplierContact = Integer.parseInt(mSupplierContactText.getText().toString().trim());
 
-        if (mCurrentItemUri == null && TextUtils.isEmpty(name) && TextUtils.isEmpty(String.valueOf(price)) &&
+        if (mCurrentItemUri == null && TextUtils.isEmpty(name) && TextUtils.isEmpty(
+                String.valueOf(price)) &&
                 TextUtils.isEmpty(String.valueOf(quantity)) && TextUtils.isEmpty(supplierName) &&
                 TextUtils.isEmpty(String.valueOf(supplierContact))) {
             return;
@@ -250,6 +367,8 @@ public class EditorActivity extends AppCompatActivity implements
         }
         values.put(ItemEntry.COLUMN_SUPPLIER_CONTACT, supplierContact);
 
+        values.put(ItemEntry.COLUMN_IMAGE, mCurrentPhotoUri);
+
         if (mCurrentItemUri == null) {
 
             Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
@@ -264,12 +383,10 @@ public class EditorActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, "Item update failed",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Item update failed", Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, "Item update successfull",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Item update successfull", Toast.LENGTH_SHORT).show();
             }
         }
         finish();
@@ -278,21 +395,12 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String[] projection = {
-                ItemEntry._ID,
-                ItemEntry.COLUMN_ITEM_NAME,
-                ItemEntry.COLUMN_ITEM_PRICE,
-                ItemEntry.COLUMN_ITEM_QUANTITY,
-                ItemEntry.COLUMN_SUPPLIER_NAME,
-                ItemEntry.COLUMN_SUPPLIER_CONTACT,
+                ItemEntry._ID, ItemEntry.COLUMN_ITEM_NAME, ItemEntry.COLUMN_ITEM_PRICE,
+                ItemEntry.COLUMN_ITEM_QUANTITY, ItemEntry.COLUMN_SUPPLIER_NAME,
+                ItemEntry.COLUMN_SUPPLIER_CONTACT, ItemEntry.COLUMN_IMAGE
         };
 
-        return new CursorLoader(this,
-                mCurrentItemUri,
-                projection,
-                null,
-                null,
-                null);
-
+        return new CursorLoader(this, mCurrentItemUri, projection, null, null, null);
     }
 
     @Override
@@ -308,21 +416,27 @@ public class EditorActivity extends AppCompatActivity implements
             int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
             int supplierNameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_SUPPLIER_NAME);
             int supplierContactColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_SUPPLIER_CONTACT);
-//            int supplierEmailColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_SUPPLIER_EMAIL);
+            int imageColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_IMAGE);
+            //            int supplierEmailColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_SUPPLIER_EMAIL);
             // Read the item attributes from the cursor for the current item
             String name = cursor.getString(nameColumnIndex);
             double price = cursor.getDouble(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String supplierName = cursor.getString(supplierNameColumnIndex);
             int supplierPhone = cursor.getInt(supplierContactColumnIndex);
-//            String supplierEmail = cursor.getString(supplierEmailColumnIndex);
+            mCurrentPhotoUri = cursor.getString(imageColumnIndex);
+            //            String supplierEmail = cursor.getString(supplierEmailColumnIndex);
 
             mNameEditText.setText(name);
             mPriceEditText.setText(Double.toString(price));
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupplierNameEditText.setText(supplierName);
             mSupplierContactText.setText(Integer.toString(supplierPhone));
-
+            Glide.with(this).load(mCurrentPhotoUri)
+                    .placeholder(R.drawable.default_image)
+                    .crossFade()
+                    .fitCenter()
+                    .into(mImageView);
         }
     }
 
